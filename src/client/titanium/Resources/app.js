@@ -1,5 +1,6 @@
 // this sets the background color of the master UIView (when there are no windows/tab groups on it)
 var ApiMapper = require("lib/apiMapper").ApiMapper;
+
 Titanium.UI.setBackgroundColor('#95BEEA');
 
 // タブグループの生成
@@ -9,6 +10,10 @@ var tabGroup = Titanium.UI.createTabGroup();
  * freeze : 現在位置の凍結情報表示 Tab の設定
  */
 var freezeWindow = Titanium.UI.createWindow({
+    backgroundColor : "#95BEEA",
+    exitOnClose : true,
+    navBarHidden : true,
+    /* グラデーションを一時的にオフ
       backgroundGradient:{
         type: 'linear',
         startPoint: { x: '50%', y: '0%' },
@@ -19,8 +24,8 @@ var freezeWindow = Titanium.UI.createWindow({
           { color: '#5D9DDD', offset: 1.0 }
         ]
     }
+    */
 });
-freezeWindow.hideNavBar();
 
 var freezeTab = Titanium.UI.createTab({
     icon:'KS_nav_views.png',
@@ -315,19 +320,21 @@ progressBar.show();
  * alarmWindow:「使い方」などの情報を表示
  */
 var alarmWindow = Titanium.UI.createWindow({
-     backgroundGradient:{
-        type: 'linear',
-        startPoint: { x: '50%', y: '0%' },
-        endPoint: { x: '50%', y: '100%' },
-        colors: [
-          { color: '#CBDFF4', offset: 0.0},
-          { color: '#95BEEA', offset: 0.3},
-          { color: '#5D9DDD', offset: 1.0 }
-        ]
-    }
+    backgroundColor : "#95BEEA",
+    navBarHidden: true,
+    /*
+    backgroundGradient:{
+       type: 'linear',
+       startPoint: { x: '50%', y: '0%' },
+       endPoint: { x: '50%', y: '100%' },
+       colors: [
+         { color: '#CBDFF4', offset: 0.0},
+         { color: '#95BEEA', offset: 0.3},
+         { color: '#5D9DDD', offset: 1.0 }
+       ]
+   }
+   */
 });
-alarmWindow.hideNavBar();
-
 
 var alarmTab = Titanium.UI.createTab({
     title:'アラームについて',
@@ -473,19 +480,19 @@ var memberIntroduction4 = Titanium.UI.createLabel({
 });
 
 memberLabel1.addEventListener('click', function(e) {
-        //ログインのダイアログ
+    //ログインのダイアログ
     Titanium.Platform.openURL('http://twitter.com/isseium');
  });
 memberLabel2.addEventListener('click', function(e) {
-        //ログインのダイアログ
+    //ログインのダイアログ
     Titanium.Platform.openURL('http://twitter.com/s2k1ta98');
  });
 memberLabel3.addEventListener('click', function(e) {
-        //ログインのダイアログ
+    //ログインのダイアログ
     Titanium.Platform.openURL('http://twitter.com/iwate_takayu');
  });
 memberLabel4.addEventListener('click', function(e) {
-        //ログインのダイアログ
+    //ログインのダイアログ
     Titanium.Platform.openURL('http://twitter.com/whitech0c0');
  });
 
@@ -501,7 +508,7 @@ var scrollView = Ti.UI.createScrollView({
 var view = Ti.UI.createView({
     // backgroundColor:'#99DDFF',
     // borderRadius: 10,
-// 　　backgroundColor : '#000',　　opacity : 0.3, visible : false,
+    // backgroundColor : '#000',　　opacity : 0.3, visible : false,
     top: 10,
     height: 'auto',
     width: '100%'
@@ -540,10 +547,10 @@ progressBar.value = 1;
 /**
  * 位置情報
  */
+Titanium.Geolocation.getCurrentPosition(function(e) {});
 Ti.Geolocation.preferredProvider = Titanium.Geolocation.PROVIDER_GPS;
 Ti.Geolocation.distanceFilter = 10;
 Ti.Geolocation.accuracy = Ti.Geolocation.ACCURACY_THREE_KILOMETERS;
-
 Titanium.Geolocation.addEventListener( 'location', getLocation );
 
 /**
