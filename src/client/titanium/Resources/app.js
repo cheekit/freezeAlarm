@@ -3,6 +3,13 @@ var ApiMapper = require("lib/apiMapper").ApiMapper;
 
 Titanium.UI.setBackgroundColor('#95BEEA');
 
+// 停止時はアプリを終了する
+// refs: http://higelog.brassworks.jp/?p=1427
+Ti.App.addEventListener("pause", function(e){
+    Titanium.Android.currentActivity.close();
+});
+
+
 // タブグループの生成
 var tabGroup = Titanium.UI.createTabGroup();
 
@@ -110,7 +117,9 @@ var getLocation = function(e) {
     }
 
     if(e.error){
+        // Ti.App.exit();
         alert(e.error);
+        // Titanium.Android.currentActivity.close();
         return;
     }
 
@@ -139,7 +148,6 @@ var getLocation = function(e) {
                         pref = address[i].replace(/\(.*\)/,'');
                     }
                 }
-                Ti.API.log(e.places[0]);
                 city = e.places[0].city.replace(/\(.*\)/,'');
             }
 
@@ -198,7 +206,6 @@ var getLocation = function(e) {
                             function(){
                                 // 成功したとき
                                  var json = eval('(' + this.responseText + ')');
-                                 Ti.API.info(this.responseText);
                             },
                             function(){
                                 // 失敗したとき
@@ -215,9 +222,6 @@ var getLocation = function(e) {
                         // called when a push notification is received.
                         var obj = JSON.parse(JSON.stringify(e.data));
                         Ti.API.log(e.data);
-                        // alert("Received a push notification\n\nPayload:\n\n"+JSON.stringify(e.data));
-                        // var jsontext = eval('(' + JSON.stringify(e.data) + ')');
-                        // alert("Received a push notification:\n"+ jsontext.forecast.aps.alert);
                     }
                 });
 
@@ -480,19 +484,15 @@ var memberIntroduction4 = Titanium.UI.createLabel({
 });
 
 memberLabel1.addEventListener('click', function(e) {
-    //ログインのダイアログ
     Titanium.Platform.openURL('http://twitter.com/isseium');
  });
 memberLabel2.addEventListener('click', function(e) {
-    //ログインのダイアログ
     Titanium.Platform.openURL('http://twitter.com/s2k1ta98');
  });
 memberLabel3.addEventListener('click', function(e) {
-    //ログインのダイアログ
     Titanium.Platform.openURL('http://twitter.com/iwate_takayu');
  });
 memberLabel4.addEventListener('click', function(e) {
-    //ログインのダイアログ
     Titanium.Platform.openURL('http://twitter.com/whitech0c0');
  });
 
@@ -547,10 +547,10 @@ progressBar.value = 1;
 /**
  * 位置情報
  */
-Titanium.Geolocation.getCurrentPosition(function(e) {});
 Ti.Geolocation.preferredProvider = Titanium.Geolocation.PROVIDER_GPS;
-Ti.Geolocation.distanceFilter = 10;
+Ti.Geolocation.distanceFilter = 0;
 Ti.Geolocation.accuracy = Ti.Geolocation.ACCURACY_THREE_KILOMETERS;
+Titanium.Geolocation.getCurrentPosition(getLocation);
 Titanium.Geolocation.addEventListener( 'location', getLocation );
 
 /**
@@ -564,6 +564,7 @@ if(Ti.Platform.osname=="android"){
     }else{
         Ti.API.info('service is not running');
         serviceIntent.putExtra('interval', 3600000);
+//        serviceIntent.putExtra('interval', 10000);    // for test
         var service = Titanium.Android.createService(serviceIntent);
         service.initialized = true;
         service.start();

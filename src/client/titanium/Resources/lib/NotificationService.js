@@ -44,7 +44,7 @@ var getServiceLocation = function (e){
 	Ti.API.log('Success: get location from gps');
 
 	// 成功したら自動取得をやめる
-	Ti.Geolocation.removeEventListener( 'serviceLocation', getServiceLocation );
+	Ti.Geolocation.removeEventListener( 'location', getServiceLocation );
 
 	// 位置情報処理
 	gpslon = e.coords.longitude;
@@ -62,6 +62,12 @@ var getServiceLocation = function (e){
 			min = json.forecast.temperature.min;
 			Ti.API.log('MIN: ' + min);
 
+			// 日付
+			var today = new Date();
+            var month = today.getMonth() + 1;
+            var day = today.getDate();
+            var hour = today.getHours();
+
 			var title = '';
 			var text = '';
 			var tickerText = '';
@@ -78,6 +84,8 @@ var getServiceLocation = function (e){
 				return;
 			}
 
+			text += " (" + month + "月" + day + "日" + hour + "時 現在)";
+
 			var notification = Ti.Android.createNotification({
 					contentIntent : pending,
 					contentTitle: title,
@@ -92,18 +100,17 @@ var getServiceLocation = function (e){
 			Titanium.Media.vibrate();		// 振動させる TODO: パターン変更
 
 		},
-		function(){
+		function(e){
 			// 失敗したとき
 			Ti.API.error('天気予報の取得に失敗しました');
 			var notification = Ti.Android.createNotification({
 					contentIntent : pending,
 					contentTitle: 'Freeze Alarm',
-					contentText:  '天気予報の取得に失敗しました',
+					contentText:  '天気予報の取得に失敗しました : ' + e.error,
 					tickerText : '天気予報の取得に失敗しました',
 			});
 
 			// 通知領域へ表示
-			// TODO: プロパティどうつかうか調べる https://developer.appcelerator.com/apidoc/mobile/1.7.2/Titanium.Android.NotificationManager-module
 			Ti.Android.NotificationManager.notify(1, notification);
 			Titanium.Media.vibrate();		// 振動させる TODO: パターン変更
 		}
@@ -142,18 +149,8 @@ if(interval == 0){
 	    Ti.Geolocation.frequency = 0;
 	    Ti.Geolocation.preferredProvider = Ti.Geolocation.PROVIDER_GPS;
 		Ti.Geolocation.accuracy = Ti.Geolocation.ACCURACY_LOW;
-		/*
-		var providerGps = Ti.Geolocation.Android.createLocationProvider({
-		    name: Ti.Geolocation.PROVIDER_GPS,
-		    minUpdateDistance: 0.0,
-		    minUpdateTime: 0
-		});
-		Ti.Geolocation.Android.addLocationProvider(providerGps);
-		Ti.Geolocation.Android.manualMode = true;
-		Ti.Geolocation.addEventListener( 'serviceLocation', getServiceLocation );
-		*/
-		Ti.Geolocation.addEventListener( 'serviceLocation', getServiceLocation );
-		//Ti.Geolocation.getCurrentPosition(getServiceLocation);
+		Ti.Geolocation.getCurrentPosition(getServiceLocation);
+		Ti.Geolocation.addEventListener( 'location', getServiceLocation );
 	}else{
 		Ti.API.error('Location Services is Disabled');
 	}
